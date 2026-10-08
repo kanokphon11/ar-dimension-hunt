@@ -4,6 +4,8 @@ on:
   push:
     branches: [main]
     paths:
+      - "game-v08.zip"
+      - "game-v08.zip.zip"
       - "game-v07.zip"
       - "game-v07.zip.zip"
       - "game.zip"
@@ -34,16 +36,25 @@ jobs:
           rm -rf site tmp
           mkdir -p site tmp
 
-          if [ -f game-v07.zip ]; then
+          PACKAGE=""
+          VERSION=""
+
+          if [ -f game-v08.zip ]; then
+            PACKAGE="game-v08.zip"
+            VERSION="v0.8"
+          elif [ -f game-v08.zip.zip ]; then
+            PACKAGE="game-v08.zip.zip"
+            VERSION="v0.8"
+          elif [ -f game-v07.zip ]; then
             PACKAGE="game-v07.zip"
+            VERSION="v0.7"
           elif [ -f game-v07.zip.zip ]; then
             PACKAGE="game-v07.zip.zip"
-          else
-            PACKAGE=""
+            VERSION="v0.7"
           fi
 
           if [ -n "$PACKAGE" ]; then
-            echo "Deploying v0.7 package: $PACKAGE"
+            echo "Deploying $VERSION package: $PACKAGE"
             unzip -q "$PACKAGE" -d tmp
             cp -a tmp/. site/
           elif [ -f game.zip ]; then
