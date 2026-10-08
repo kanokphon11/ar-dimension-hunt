@@ -4,6 +4,7 @@ on:
   push:
     branches: [main]
     paths:
+      - "game-v07.zip"
       - "game.zip"
       - "overrides/**"
       - ".github/workflows/deploy-pages.yml"
@@ -31,27 +32,36 @@ jobs:
           set -e
           rm -rf site tmp
           mkdir -p site tmp
-          if [ ! -f game.zip ]; then
-            echo "game.zip not found"
+
+          if [ -f game-v07.zip ]; then
+            echo "Deploying v0.7 package"
+            unzip -q game-v07.zip -d tmp
+            cp -a tmp/. site/
+          elif [ -f game.zip ]; then
+            echo "Deploying legacy package"
+            unzip -q game.zip -d tmp
+            if [ -d tmp/ardh_v05 ]; then
+              cp -a tmp/ardh_v05/. site/
+            else
+              first_dir="$(find tmp -mindepth 1 -maxdepth 1 -type d | head -n 1 || true)"
+              if [ -n "$first_dir" ] && [ -f "$first_dir/index.html" ]; then
+                cp -a "$first_dir"/. site/
+              else
+                cp -a tmp/. site/
+              fi
+            fi
+            if [ -d overrides ]; then
+              cp -a overrides/. site/
+            fi
+          else
+            echo "No game package found"
             exit 1
           fi
-          unzip -q game.zip -d tmp
-          if [ -d tmp/ardh_v05 ]; then
-            cp -a tmp/ardh_v05/. site/
-          else
-            first_dir="$(find tmp -mindepth 1 -maxdepth 1 -type d | head -n 1 || true)"
-            if [ -n "$first_dir" ] && [ -f "$first_dir/index.html" ]; then
-              cp -a "$first_dir"/. site/
-            else
-              cp -a tmp/. site/
-            fi
-          fi
-          if [ -d overrides ]; then
-            cp -a overrides/. site/
-          fi
+
           touch site/.nojekyll
           test -f site/index.html
-          test -f site/login-override.js
+          test -f site/app.js
+          test -f site/items.js
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
