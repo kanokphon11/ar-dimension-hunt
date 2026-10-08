@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#07122b"><title>AR Dimension Hunt</title>
+<link rel="manifest" href="manifest.webmanifest"><link rel="stylesheet" href="style.css">
+<style>.loginHidden{display:none!important}#studentLookup{margin:.7rem 0;padding:.75rem 1rem;text-align:left;border-radius:16px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16)}#studentLookup b{display:block;font-size:1rem}#studentLookup small{display:block;margin-top:.25rem;opacity:.78}#studentLookup[data-type="error"]{border-color:rgba(255,100,120,.7);background:rgba(255,60,90,.09)}</style>
+</head>
+<body>
+<div id="app">
+  <section id="login" class="screen active">
+    <div class="heroStars"></div>
+    <div class="loginCard glass">
+      <div class="logoOrb">✦</div>
+      <h1>AR DIMENSION HUNT</h1><p class="thaiTitle">ภารกิจล่าขุมทรัพย์มิติ</p>
+      <p class="schoolName">โรงเรียนชุมชนบ้านหนองหญ้าปล้อง</p>
+      <p class="lead">เดินสำรวจโรงเรียน • พบวัตถุ AR • ไขรหัสคณิตศาสตร์ • สะสมเข้ากระเป๋า 4 มิติ</p>
+      <div id="modeBadge" class="modeBadge">โหมดในเครื่อง</div>
+      <div id="preflight" class="preflight glass" aria-label="ตรวจความพร้อมระบบ">
+        <div class="preflightTitle"><b>ตรวจความพร้อมก่อนเริ่ม</b><button id="recheckBtn" type="button">ตรวจอีกครั้ง</button></div>
+        <div class="preflightGrid">
+          <span id="pfHttps" class="pf pending">🌐 HTTPS</span>
+          <span id="pfGps" class="pf pending">📍 GPS</span>
+          <span id="pfCamera" class="pf pending">📷 กล้อง AR</span>
+          <span id="pfApi" class="pf pending">☁️ ระบบกลาง</span>
+        </div>
+        <small id="preflightHint">กำลังตรวจสอบอุปกรณ์และระบบกลาง...</small>
+      </div>
+      <label>รหัสนักเรียน<input id="studentCode" maxlength="3" inputmode="text" autocomplete="off" autocapitalize="characters" placeholder="เช่น 501 หรือ A"></label>
+      <label class="loginHidden">ชื่อนักเรียน<input id="studentName" maxlength="30" autocomplete="off"></label>
+      <label class="loginHidden">ระดับชั้น<select id="grade"><option value="4">ป.4</option><option value="5">ป.5</option><option value="6">ป.6</option></select></label>
+      <div id="studentLookup" aria-live="polite"><b>🔎 กรอกรหัสนักเรียน</b><small>นักเรียนใช้รหัส 3 หลัก • ครูทดสอบใช้ A หรือ B</small></div>
+      <button id="startBtn" class="primary">เริ่มภารกิจ</button>
+      <button id="demoBtn" class="ghost">ทดลองบนคอม (จำลองการเดิน)</button>
+      <small>การใช้ GPS และกล้องต้องเปิดผ่าน HTTPS หรือ localhost • เมื่อเชื่อม GAS ข้อมูลจะซิงก์กับ Google Sheet</small>
+    </div>
+  </section>
+
+  <section id="main" class="screen">
+    <header class="topbar glass"><div><b id="hello">นักสำรวจ</b><span id="statusText">กำลังค้นหาสัญญาณ...</span></div><div class="topRight"><span id="syncDot" class="syncDot local"></span><div class="counter"><span>🎒</span><b id="bagCount">0</b></div></div></header>
+    <main class="mainContent">
+      <div id="legendaryBanner" class="legendaryBanner hidden"><span>👑</span><div><b>ตรวจพบสัญญาณระดับตำนาน!</b><small id="legendaryText">อยู่ใกล้บริเวณนี้</small></div></div>
+      <div class="viewSwitch glass"><button id="radarViewBtn" class="active">📡 เรดาร์</button><button id="mapViewBtn">🗺️ แผนที่ภารกิจ</button></div>
+      <div id="radarWrap" class="radarWrap glass">
+        <div class="radar" id="radar"><div class="sweep"></div><div class="me">▲</div></div>
+        <div class="radarInfo"><b id="nearTitle">สัญญาณใกล้ตัว</b><span id="gpsAccuracy">GPS --</span></div>
+        <div class="rarityLegend"><span class="common">● ทั่วไป</span><span class="rare">● หายาก</span><span class="epic">● มหากาพย์</span><span class="legendary">● ตำนาน</span></div>
+      </div>
+      <div id="mapWrap" class="mapWrap glass hidden">
+        <div class="mapHead"><div><b>แผนที่ภารกิจ</b><small>ตำแหน่งจุดเกิดจริง • ไม่แสดงถนน</small></div><select id="mapRange"><option value="75">75 ม.</option><option value="150" selected>150 ม.</option><option value="300">300 ม.</option></select></div>
+        <svg id="missionMap" viewBox="0 0 320 320" role="img" aria-label="แผนที่จุดเกิดของสะสม"></svg>
+        <div id="mapHint" class="mapHint">แตะจุดบนแผนที่เพื่อดูรายละเอียด</div>
+      </div>
+      <div id="nearby" class="nearby"></div>
+      <div class="mission glass">
+        <span>🧭</span><div><b>ภารกิจวันนี้</b><small id="missionText">กำลังโหลดภารกิจ...</small></div>
+        <div class="progress"><i id="missionBar"></i></div>
+        <div id="missionList" class="missionList"></div>
+      </div>
+    </main>
+    <nav class="bottomNav glass"><button data-tab="radar" class="active">📡<span>สำรวจ</span></button><button data-tab="bag">🎒<span>กระเป๋า</span></button><button id="arNav">📷<span>AR</span></button><button data-tab="dex">📚<span>Dex</span></button><button data-tab="rank">🏆<span>อันดับ</span></button><button data-tab="settings">⚙️<span>ตั้งค่า</span></button></nav>
+  </section>
+
+  <section id="panel" class="screen overlayPanel"><header><button id="backPanel">←</button><h2 id="panelTitle"></h2></header><div id="panelBody"></div></section>
+
+  <section id="arScreen" class="screen arScreen">
+    <video id="camera" autoplay playsinline muted></video><div class="cameraFallback"></div>
+    <div class="arHud"><button id="closeAr">✕</button><div id="arRarity" class="glass pill">--</div><div id="arDistance" class="glass pill">-- m</div></div>
+    <div id="arHint" class="arHint glass">ขยับกล้องช้า ๆ เพื่อค้นหาวัตถุ</div>
+    <button id="arItemBtn" class="arItemBtn"><img id="arItemImg" alt="วัตถุ AR"><span class="scanRing"></span></button>
+  </section>
+
+  <div id="mathModal" class="modal"><div class="modalCard glass"><div class="lockIcon">🔐</div><h2>DIMENSION LOCK</h2><p>คำนวณคำตอบเพื่อปลดล็อก</p><div id="question" class="question">24 × 3 = ?</div><div id="answer" class="answer">_ _ _</div><div class="keypad"></div><button id="cancelMath" class="ghost">ยกเลิก</button></div></div>
+  <div id="setComplete" class="setComplete"><div class="setCompleteCard"><div class="trophy">🏆</div><b id="setCompleteTitle">สะสมครบเซ็ต!</b><span id="setCompleteText"></span><button id="closeSetComplete">เยี่ยมมาก!</button></div></div>
+  <div id="toast" class="toast"></div>
+</div>
+<script src="config.js"></script><script src="items.js"></script><script src="app.js"></script><script src="login-override.js"></script>
+</body></html>
