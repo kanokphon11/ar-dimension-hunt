@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - "game.zip"
+      - "overrides/**"
       - ".github/workflows/deploy-pages.yml"
   workflow_dispatch:
 
@@ -45,8 +46,12 @@ jobs:
               cp -a tmp/. site/
             fi
           fi
+          if [ -d overrides ]; then
+            cp -a overrides/. site/
+          fi
           touch site/.nojekyll
           test -f site/index.html
+          test -f site/login-override.js
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
