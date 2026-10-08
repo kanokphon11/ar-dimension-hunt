@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - "game-v07.zip"
+      - "game-v07.zip.zip"
       - "game.zip"
       - "overrides/**"
       - ".github/workflows/deploy-pages.yml"
@@ -34,8 +35,16 @@ jobs:
           mkdir -p site tmp
 
           if [ -f game-v07.zip ]; then
-            echo "Deploying v0.7 package"
-            unzip -q game-v07.zip -d tmp
+            PACKAGE="game-v07.zip"
+          elif [ -f game-v07.zip.zip ]; then
+            PACKAGE="game-v07.zip.zip"
+          else
+            PACKAGE=""
+          fi
+
+          if [ -n "$PACKAGE" ]; then
+            echo "Deploying v0.7 package: $PACKAGE"
+            unzip -q "$PACKAGE" -d tmp
             cp -a tmp/. site/
           elif [ -f game.zip ]; then
             echo "Deploying legacy package"
