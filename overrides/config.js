@@ -1,0 +1,11 @@
+window.GAME_CONFIG = {
+  API_URL: 'https://script.google.com/macros/s/AKfycbxbRE0tAZo3UnM-BVTV8S5RSTWn9UteZva_wN9t-LLtpB2EpTkNRz6xx_CAZHWp293B/exec',
+  SCHOOL_NAME: 'โรงเรียนชุมชนบ้านหนองหญ้าปล้อง',
+  DATABASE_SPREADSHEET_ID: '1b41QJBpfbSpUWzDUskvMK-O8Il7ikyN7jBV5LraSMik',
+  APP_VERSION: '0.6-roster-login',
+  CLOUD_SYNC_INTERVAL_MS: 60000,
+  LEGENDARY_ALERT_RADIUS_M: 250,
+  DAILY_COLLECT_GOAL: 3,
+  DAILY_RARE_GOAL: 1,
+  DAILY_WALK_GOAL_BY_GRADE: {4:120,5:160,6:200}
+};
