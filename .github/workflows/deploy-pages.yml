@@ -4,6 +4,8 @@ on:
   push:
     branches: [main]
     paths:
+      - "game-v12.zip"
+      - "game-v12.zip.zip"
       - "game-v11.zip"
       - "game-v11.zip.zip"
       - "game-v10.zip"
@@ -45,7 +47,13 @@ jobs:
           PACKAGE=""
           VERSION=""
 
-          if [ -f game-v11.zip ]; then
+          if [ -f game-v12.zip ]; then
+            PACKAGE="game-v12.zip"
+            VERSION="v1.2"
+          elif [ -f game-v12.zip.zip ]; then
+            PACKAGE="game-v12.zip.zip"
+            VERSION="v1.2"
+          elif [ -f game-v11.zip ]; then
             PACKAGE="game-v11.zip"
             VERSION="v1.1"
           elif [ -f game-v11.zip.zip ]; then
